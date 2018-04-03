@@ -1,3 +1,12 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define FILEINFO fprintf(stderr, "In %s, line %d\n", __FILE__, __LINE__);
+#define VEC_RESIZE_MULTIPLIER 2
+
+enum vector_e { START=-3, ELEM_SIZE=-3, LEN=-2, USED=-1, DATA=0};
+
 void *vec(int elem_size, int len) {
 	int *ptr = malloc((sizeof(int)) * 3 + elem_size*len);
 	ptr = &ptr[3];
