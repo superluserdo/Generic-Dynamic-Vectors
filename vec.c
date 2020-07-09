@@ -8,8 +8,8 @@
 
 enum vector_e { START=-3, ELEM_SIZE=-3, LEN=-2, USED=-1, DATA=0};
 
-void *vec(int elem_size, int len) {
-	int *ptr = malloc((sizeof(int)) * 3 + elem_size*len);
+void *vec(size_t elem_size, size_t len) {
+	size_t *ptr = malloc((sizeof(size_t)) * 3 + elem_size*len);
 	ptr = &ptr[3];
 	ptr[ELEM_SIZE] = elem_size;
 	ptr[LEN] = len;
@@ -18,28 +18,28 @@ void *vec(int elem_size, int len) {
 	return (void *)ptr;
 }
 
-int vec_elem_size(void *vec) {
-	int *ptr = vec;
+size_t vec_elem_size(void *vec) {
+	size_t *ptr = vec;
 	return ptr[ELEM_SIZE];
 }
 
-int vec_len(void *vec) {
-	int *ptr = vec;
+size_t vec_len(void *vec) {
+	size_t *ptr = vec;
 	return ptr[LEN];
 }
 
-int vec_used(void *vec) {
-	int *ptr = vec;
+size_t vec_used(void *vec) {
+	size_t *ptr = vec;
 	return ptr[USED];
 }
 
 void vec_push(void **vecptr) {
 
-	int *vec = (int *)*vecptr;
+	size_t *vec = (size_t *)*vecptr;
 
 	/* Resize vector if we have run out of space */
 	if (vec[USED] == vec[LEN]) {
-		vec = realloc(&vec[START], vec[ELEM_SIZE]*vec[LEN]*VEC_RESIZE_MULTIPLIER + 3*sizeof(int));
+		vec = realloc(&vec[START], vec[ELEM_SIZE]*vec[LEN]*VEC_RESIZE_MULTIPLIER + 3*sizeof(size_t));
 		if (!vec) {
 			fprintf(stderr, "Can't realloc vector\n");
 			FILEINFO
@@ -54,7 +54,7 @@ void vec_push(void **vecptr) {
 }
 
 void vec_pop(void **vecptr) {
-	int *vec = (int *)*vecptr;
+	size_t *vec = (size_t *)*vecptr;
 
 	/* Free vector if we are popping the only remaining element */
 	if (vec[USED] > 0) {
@@ -63,7 +63,7 @@ void vec_pop(void **vecptr) {
 
 	/* Reduce vector if we have unecessarily large free space */
 	if (vec[LEN] > vec[USED] * VEC_RESIZE_MULTIPLIER) {
-		vec = realloc(&vec[START], vec[ELEM_SIZE]*vec[USED] + 3*sizeof(int));
+		vec = realloc(&vec[START], vec[ELEM_SIZE]*vec[USED] + 3*sizeof(size_t));
 		if (!vec) {
 			fprintf(stderr, "Can't realloc vector\n");
 			FILEINFO
@@ -77,9 +77,9 @@ void vec_pop(void **vecptr) {
 }
 
 void vec_free(void *vector) {
-	int *int_vec = (int *)vector;
-	int_vec = &int_vec[START];
-	free(int_vec);
+	size_t *size_t_vec = (size_t *)vector;
+	size_t_vec = &size_t_vec[START];
+	free(size_t_vec);
 }
 
 
