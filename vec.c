@@ -33,6 +33,23 @@ size_t vec_used(void *vec) {
 	return ptr[USED];
 }
 
+void vec_grow(void **vecptr, int n) {
+	size_t *vec = (size_t *)*vecptr;
+
+	assert(vec[LEN]+n >= 0);
+
+	vec = realloc(&vec[START], vec[ELEM_SIZE]*(vec[LEN]+n) + 3*sizeof(size_t));
+	if (!vec) {
+		fprintf(stderr, "Can't realloc vector\n");
+		FILEINFO
+		abort();
+	}
+	vec = &vec[3]; // Make vec point to start of data
+	vec[LEN] += n; // Expand listed size
+
+	*vecptr = (void *)vec;
+}
+
 void vec_push_n(void **vecptr, size_t n, void *items) {
 
 	size_t *vec = (size_t *)*vecptr;
@@ -56,11 +73,11 @@ void vec_push_n(void **vecptr, size_t n, void *items) {
 		vec[LEN] *= new_len; // Expand listed size
 	}
 
-	void *dest = &((char *)vec)[vec[USED]*vec[ELEM_SIZE]];
-	memcpy(dest, items, n * vec[ELEM_SIZE]);
-
 	vec[USED] = new_used; // Increase "used" count
 	*vecptr = (void *)vec;
+
+	void *dest = &((char *)vec)[vec[USED]*vec[ELEM_SIZE]];
+	memcpy(dest, items, n * vec[ELEM_SIZE]);
 
 }
 
