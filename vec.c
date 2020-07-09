@@ -33,27 +33,39 @@ size_t vec_used(void *vec) {
 	return ptr[USED];
 }
 
-void vec_push(void **vecptr) {
+void vec_push_n(void **vecptr, size_t n, void *items) {
 
 	size_t *vec = (size_t *)*vecptr;
 
+	size_t new_len = vec[LEN];
+	size_t new_used = vec[USED] + n;
+
 	/* Resize vector if we have run out of space */
-	if (vec[USED] == vec[LEN]) {
-		vec = realloc(&vec[START], vec[ELEM_SIZE]*vec[LEN]*VEC_RESIZE_MULTIPLIER + 3*sizeof(size_t));
+	while (new_used >= vec[LEN]) {
+			new_len *= VEC_RESIZE_MULTIPLIER;
+	}
+
+	if (vec[LEN] != new_len) {
+		vec = realloc(&vec[START], vec[ELEM_SIZE]*new_len + 3*sizeof(size_t));
 		if (!vec) {
 			fprintf(stderr, "Can't realloc vector\n");
 			FILEINFO
 			abort();
 		}
 		vec = &vec[3]; // Make vec point to start of data
-		vec[LEN] *= VEC_RESIZE_MULTIPLIER; // Expand listed size
+		vec[LEN] *= new_len; // Expand listed size
 	}
 
-		vec[USED]++; // Increase "used" count
-		*vecptr = (void *)vec;
+	void *dest = &((char *)vec)[vec[USED]*vec[ELEM_SIZE]];
+	memcpy(dest, items, n * vec[ELEM_SIZE]);
+
+	vec[USED] = new_used; // Increase "used" count
+	*vecptr = (void *)vec;
+
 }
 
-void vec_pop(void **vecptr) {
+void vec_pop_n(void **vecptr, size_t n) {
+
 	size_t *vec = (size_t *)*vecptr;
 
 	/* Free vector if we are popping the only remaining element */
@@ -74,6 +86,14 @@ void vec_pop(void **vecptr) {
 	}
 
 		*vecptr = (void *)vec;
+}
+
+void vec_push(void **vecptr, void *item) {
+	vec_push_n(vecptr, 1, item);
+}
+
+void vec_pop(void **vecptr) {
+	vec_pop_n(vecptr, 1);
 }
 
 void vec_free(void *vector) {
