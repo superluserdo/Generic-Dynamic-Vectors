@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vec.h>
 
 #define FILEINFO fprintf(stderr, "In %s, line %d\n", __FILE__, __LINE__);
 #define VEC_RESIZE_MULTIPLIER 2
@@ -15,6 +16,21 @@ void *vec(int elem_size, int len) {
 	ptr[USED] = 0;
 	memset(&ptr[DATA], 0, elem_size*len);
 	return (void *)ptr;
+}
+
+int vec_elem_size(void *vec) {
+	int *ptr = vec;
+	return ptr[ELEM_SIZE];
+}
+
+int vec_len(void *vec) {
+	int *ptr = vec;
+	return ptr[LEN];
+}
+
+int vec_used(void *vec) {
+	int *ptr = vec;
+	return ptr[USED];
 }
 
 void vec_push(void **vecptr) {
